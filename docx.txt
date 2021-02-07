@@ -1,0 +1,2 @@
+#marshal(message, message_fields), status.HTTP_202_ACCEPTED = @marshal_with(message_fields) + return message
+# 'message' : obj to be serialzed and 'message_fields' which fields to be serialzed
