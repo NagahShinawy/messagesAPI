@@ -1,6 +1,6 @@
 from flask_restful import abort, marshal_with, reqparse, Resource, marshal
 from datetime import datetime
-from models import MessageModel
+from models.message import MessageModel
 import status
 from pytz import utc
 from managers.message_manager import message_manager, message_fields
