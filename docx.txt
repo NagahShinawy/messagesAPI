@@ -1,2 +1,12 @@
 #marshal(message, message_fields), status.HTTP_202_ACCEPTED = @marshal_with(message_fields) + return message
 # 'message' : obj to be serialzed and 'message_fields' which fields to be serialzed
+==================================
+
+make a request with httpie
+
+http GET http://127.0.0.1:5051/api/messages/
+http GET http://127.0.0.1:5051/api/messages/<int:id>
+http DELETE http://127.0.0.1:5051/api/messages/<int:id>
+
+you can try POST & PATCH using postman
+====================================
