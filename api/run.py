@@ -10,4 +10,4 @@ api.add_resource(Message, "/api/messages/<int:_id>", endpoint="single_message_en
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True, port=5051)
+    app.run(host="0.0.0.0", debug=True, port=5051)

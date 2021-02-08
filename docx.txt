@@ -10,3 +10,20 @@ http DELETE http://127.0.0.1:5051/api/messages/<int:id>
 
 you can try POST & PATCH using postman
 ====================================
+
+1- create user role
+psql > create role test2 with login password 'root';
+2- run all privilage
+psql > grant all privileges on database messages to test2;
+======================
+\q to quit psql
+
+======================
+
+schema to validate , serialze and deserialze models
+
+======================
+
+1- make migrations ==>  python api/migrate.py db init
+2- python api/migrate.py db migrate
+3- python api/migrate.py db upgrade

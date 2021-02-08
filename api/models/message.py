@@ -1,10 +1,87 @@
-class MessageModel:
-    def __init__(self, message, duration, creation_date, message_category):
-        # We will automatically generate the new id
-        self._id = 0
+from marshmallow import Schema, fields, pre_load
+from marshmallow import validate
+from extensions import db, ma
+
+
+class AddUpdateDelete:
+    def add(self, resource):
+        db.session.add(resource)
+        return db.session.commit()
+
+    def update(self):
+        return db.session.commit()
+
+    def delete(self, resource):
+        db.session.delete(resource)
+        return db.session.commit()
+
+
+class MessageModel(db.Model, AddUpdateDelete):
+
+    __tablename__ = "message"
+
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String(250), unique=True, nullable=False)
+    duration = db.Column(db.Integer, nullable=False)
+    creation_date = db.Column(
+        db.TIMESTAMP, server_default=db.func.current_timestamp(), nullable=False
+    )
+    category_id = db.Column(
+        db.Integer, db.ForeignKey("category.id", ondelete="CASCADE"), nullable=False
+    )
+    category = db.relationship(
+        "CategoryModel",
+        backref=db.backref(
+            "messages", lazy="dynamic", order_by="MessageModel.creation_date"
+        ),
+    )
+    printed_times = db.Column(db.Integer, nullable=False, server_default="0")
+    printed_once = db.Column(db.Boolean, nullable=False, server_default="false")
+
+    def __init__(self, message, duration, category):
         self.message = message
         self.duration = duration
-        self.creation_date = creation_date
-        self.message_category = message_category
-        self.printed_times = 0
-        self.printed_once = False
+        self.category = category
+
+
+class CategoryModel(db.Model, AddUpdateDelete):
+
+    __tablename__ = "category"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(150), unique=True, nullable=False)
+
+    def __init__(self, name):
+        self.name = name
+
+
+class CategorySchema(ma.Schema):
+    id = fields.Integer(dump_only=True)
+    name = fields.String(required=True, validate=validate.Length(3))
+    url = ma.URLFor("api.categoryresource", id="<id>", _external=True)
+    messages = fields.Nested("MessageSchema", many=True, exclude=("category",))
+
+
+class MessageSchema(ma.Schema):
+    id = fields.Integer(dump_only=True)
+    message = fields.String(required=True, validate=validate.Length(1))
+    duration = fields.Integer()
+    creation_date = fields.DateTime()
+    category = fields.Nested(CategorySchema, only=["id", "url", "name"], required=True)
+    printed_times = fields.Integer()
+    printed_once = fields.Boolean()
+    url = ma.URLFor("api.messageresource", id="<id>", _external=True)
+
+    @pre_load
+    def process_category(self, data):
+        category = data.get("category")
+        if category:
+            if isinstance(category, dict):
+                category_name = category.get("name")
+            else:
+                category_name = category
+            category_dict = dict(name=category_name)
+        else:
+            category_dict = {}
+        data["category"] = category_dict
+        return data
