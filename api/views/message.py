@@ -6,10 +6,11 @@ from api.schema.message import MessageSchema
 from api.extensions import db
 from sqlalchemy.exc import SQLAlchemyError
 from api.utils.http import status
-from utils.helpers.pagination import PaginationHelper
+from api.utils.helpers.pagination import PaginationHelper
+from api.views.security import AuthRequiredResource
 
 
-class MessageResource(Resource):
+class MessageResource(AuthRequiredResource):
 
     schema_class = MessageSchema
 
@@ -66,8 +67,8 @@ class MessageResource(Resource):
             # return resp, status.HTTP_401_UNAUTHORIZED
 
 
-class MessageListResource(Resource):
-    message_schema = MessageSchema
+class MessageListResource(AuthRequiredResource):
+    message_schema = MessageSchema()
 
     # def get(self):
     #     messages = MessageModel.query.all()
@@ -79,9 +80,10 @@ class MessageListResource(Resource):
         pagination_helper = PaginationHelper(
             request,
             query=MessageModel.query,
-            resource_for_url='api.messagelistresource',
-            key_name='results',
-            schema=self.message_schema())
+            resource_for_url="api.messagelistresource",  # api.messagelistresource > api: is blueprint name
+            key_name="results",
+            schema=self.message_schema,
+        )
         result = pagination_helper.paginate_query()
         return result
 

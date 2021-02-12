@@ -1,16 +1,16 @@
 from flask import request, jsonify, make_response
-from flask_restful import Resource
 from api.models.category import CategoryModel
 from api.extensions import db
 from sqlalchemy.exc import SQLAlchemyError
 from api.utils.http import status
 from api.schema.category import CategorySchema
-
+from api.utils.helpers.pagination import PaginationHelper
+from api.views.security import AuthRequiredResource
 
 category_schema = CategorySchema()
 
 
-class CategoryResource(Resource):
+class CategoryResource(AuthRequiredResource):
     def get(self, id):
         category = CategoryModel.query.get_or_404(id)
         result = category_schema.dump(category)
@@ -54,11 +54,25 @@ class CategoryResource(Resource):
             return {"error": str(e)}, status.HTTP_400_BAD_REQUEST
 
 
-class CategoryListResource(Resource):
+class CategoryListResource(AuthRequiredResource):
+
+    category_schema = CategorySchema()
+
+    # def get(self):
+    #     categories = CategoryModel.query.all()
+    #     results = category_schema.dump(categories, many=True)
+    #     return results
+
     def get(self):
-        categories = CategoryModel.query.all()
-        results = category_schema.dump(categories, many=True)
-        return results
+        pagination_helper = PaginationHelper(
+            request,
+            query=CategoryModel.query,
+            resource_for_url="api.categorylistresource",  # api.categorylistresource > api: is blueprint name
+            key_name="results",
+            schema=self.category_schema,
+        )
+        result = pagination_helper.paginate_query()
+        return result
 
     def post(self):
         request_dict = request.get_json()

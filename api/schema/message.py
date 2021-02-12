@@ -12,7 +12,9 @@ class MessageSchema(ma.Schema):
     category = fields.Nested(CategorySchema, only=["id", "url", "name"], required=True)
     printed_times = fields.Integer()
     printed_once = fields.Boolean()
-    url = ma.URLFor("api.messageresource", id="<id>", _external=True)
+    url = ma.URLFor(
+        "api.messageresource", id="<id>", _external=True
+    )  # api.messageresource > api: is blueprint name
 
     @pre_load(pass_many=True)
     # @post_load
