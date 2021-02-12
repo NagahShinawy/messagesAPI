@@ -14,9 +14,15 @@ class CategoryModel(db.Model, AddUpdateDelete):
         self.name = name
 
     @classmethod
-    def is_unique(cls, name):
-        # case-insensitive-flask-sqlalchemy-query
-        existing_category = cls.query.filter_by(name=func.lower(name)).first()
+    def is_unique(cls, id, name):
+        # test unique in POST/PATCH
+        existing_category = cls.query.filter_by(
+            name=func.lower(name)
+        ).first()  # case-insensitive-flask-sqlalchemy-query
         if existing_category is None:
             return True
-        return False
+        else:
+            if existing_category.id == id:
+                return True
+            else:
+                return False

@@ -21,6 +21,10 @@ class MessageResource(Resource):
     def patch(self, id):
         message = MessageModel.query.get_or_404(id)
         message_dict = request.get_json(force=False)
+        if not MessageModel.is_unique(id=id, message=message_dict.get("message")):
+            return {
+                "error": "A message with the same name already exists"
+            }, status.HTTP_400_BAD_REQUEST
         if message_dict is not None:
             if "message" in message_dict:
                 message.message = message_dict["message"]
@@ -45,8 +49,8 @@ class MessageResource(Resource):
             return data
         except SQLAlchemyError as e:
             db.session.rollback()
-            resp = jsonify({"error": str(e)})
-            return resp, status.HTTP_400_BAD_REQUEST
+            # resp = jsonify({"error": str(e)})
+            return {"error": str(e)}, status.HTTP_400_BAD_REQUEST
 
     def delete(self, id):
         message = MessageModel.query.get_or_404(id)
@@ -80,8 +84,10 @@ class MessageListResource(Resource):
         if errors:
             return errors, status.HTTP_400_BAD_REQUEST
 
-        if not MessageModel.is_unique(message=request_dict.get("message")):
-            return {"error": "A message with the same name already exists"}, status.HTTP_400_BAD_REQUEST
+        if not MessageModel.is_unique(id=0, message=request_dict.get("message")):
+            return {
+                "error": "A message with the same name already exists"
+            }, status.HTTP_400_BAD_REQUEST
         try:
             category_name = request_dict["category"]["name"]
             category = CategoryModel.query.filter_by(name=category_name).first()

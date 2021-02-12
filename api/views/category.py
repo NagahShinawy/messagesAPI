@@ -27,13 +27,19 @@ class CategoryResource(Resource):
             return errors, status.HTTP_400_BAD_REQUEST
         try:
             if "name" in category_dict:
-                category.name = category_dict["name"]
+                category_name = category_dict["name"]
+                if CategoryModel.is_unique(id, name=category_name):
+                    category.name = category_name
+                else:
+                    return {
+                        "error": "A category with the same name already exists"
+                    }, status.HTTP_400_BAD_REQUEST
             category.update()
             return self.get(id)
         except SQLAlchemyError as e:
             db.session.rollback()
             resp = jsonify({"error": str(e)})
-            return resp, status.HTTP_400_BAD_REQUEST
+            return {"error": str(e)}, status.HTTP_400_BAD_REQUEST
 
     def delete(self, id):
         category = CategoryModel.query.get_or_404(id)
@@ -64,8 +70,10 @@ class CategoryListResource(Resource):
             return errors, status.HTTP_400_BAD_REQUEST
 
         category_name = request_dict.get("name")
-        if not CategoryModel.is_unique(name=category_name):
-            return {"error": "A category with the same name already exists"}, status.HTTP_400_BAD_REQUEST
+        if not CategoryModel.is_unique(id=0, name=category_name):
+            return {
+                "error": "A category with the same name already exists"
+            }, status.HTTP_400_BAD_REQUEST
         try:
             category = CategoryModel(category_name.lower())
             category.add(category)

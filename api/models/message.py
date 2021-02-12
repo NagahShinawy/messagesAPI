@@ -31,8 +31,15 @@ class MessageModel(db.Model, AddUpdateDelete):
         self.category = category
 
     @classmethod
-    def is_unique(cls, message):
-        existing_message = cls.query.filter_by(message=func.lower(message)).first()
+    def is_unique(cls, id, message):
+        # test unique in POST/PATCH
+        existing_message = cls.query.filter_by(
+            message=func.lower(message)
+        ).first()  # case-insensitive-flask-sqlalchemy-query
         if existing_message is None:
             return True
-        return False
+        else:
+            if existing_message.id == id:
+                return True
+            else:
+                return False
