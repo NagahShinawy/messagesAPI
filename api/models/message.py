@@ -1,17 +1,5 @@
-from extensions import db
-
-
-class AddUpdateDelete:
-    def add(self, resource):
-        db.session.add(resource)
-        return db.session.commit()
-
-    def update(self):
-        return db.session.commit()
-
-    def delete(self, resource):
-        db.session.delete(resource)
-        return db.session.commit()
+from api.extensions import db
+from api.models.generic import AddUpdateDelete
 
 
 class MessageModel(db.Model, AddUpdateDelete):
@@ -40,14 +28,3 @@ class MessageModel(db.Model, AddUpdateDelete):
         self.message = message
         self.duration = duration
         self.category = category
-
-
-class CategoryModel(db.Model, AddUpdateDelete):
-
-    __tablename__ = "category"
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(150), unique=True, nullable=False)
-
-    def __init__(self, name):
-        self.name = name

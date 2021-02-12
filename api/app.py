@@ -1,6 +1,6 @@
 from flask import Flask
-from extensions import db
-from views import api_bp
+from api.extensions import db
+from api.views.views import api_bp
 
 
 def create_app(config_filename):

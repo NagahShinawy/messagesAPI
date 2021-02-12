@@ -1,6 +1,6 @@
 from marshmallow import fields
 from marshmallow import validate
-from extensions import ma
+from api.extensions import ma
 
 
 class CategorySchema(ma.Schema):

@@ -1,7 +1,7 @@
-from marshmallow import fields, pre_load
+from marshmallow import fields, pre_load, post_load
 from marshmallow import validate
-from extensions import ma
-from schema.category import CategorySchema
+from api.extensions import ma
+from api.schema.category import CategorySchema
 
 
 class MessageSchema(ma.Schema):
@@ -14,8 +14,9 @@ class MessageSchema(ma.Schema):
     printed_once = fields.Boolean()
     url = ma.URLFor("api.messageresource", id="<id>", _external=True)
 
-    @pre_load
-    def process_category(self, data):
+    @pre_load(pass_many=True)
+    # @post_load
+    def process_category(self, data, many, **kwargs):
         category = data.get("category")
         if category:
             if isinstance(category, dict):
