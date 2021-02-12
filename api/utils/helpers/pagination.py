@@ -34,7 +34,7 @@ class PaginationHelper:
                 _external=True)
         else:
             next_page_url = None
-        dumped_objects = self.schema.dump(objects, many=True).data
+        dumped_objects = self.schema.dump(objects, many=True)
         return ({
             self.key_name: dumped_objects,
             'previous': previous_page_url,

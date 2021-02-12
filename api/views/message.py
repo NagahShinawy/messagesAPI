@@ -6,6 +6,7 @@ from api.schema.message import MessageSchema
 from api.extensions import db
 from sqlalchemy.exc import SQLAlchemyError
 from api.utils.http import status
+from utils.helpers.pagination import PaginationHelper
 
 
 class MessageResource(Resource):
@@ -66,12 +67,22 @@ class MessageResource(Resource):
 
 
 class MessageListResource(Resource):
-    schema_class = MessageSchema
+    message_schema = MessageSchema
 
+    # def get(self):
+    #     messages = MessageModel.query.all()
+    #     message_schema = self.schema_class()
+    #     result = message_schema.dump(messages, many=True)
+    #     return result
+    #
     def get(self):
-        messages = MessageModel.query.all()
-        message_schema = self.schema_class()
-        result = message_schema.dump(messages, many=True)
+        pagination_helper = PaginationHelper(
+            request,
+            query=MessageModel.query,
+            resource_for_url='api.messagelistresource',
+            key_name='results',
+            schema=self.message_schema())
+        result = pagination_helper.paginate_query()
         return result
 
     def post(self):
