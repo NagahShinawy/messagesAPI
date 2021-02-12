@@ -79,6 +79,9 @@ class MessageListResource(Resource):
         errors = message_schema.validate(request_dict)
         if errors:
             return errors, status.HTTP_400_BAD_REQUEST
+
+        if not MessageModel.is_unique(message=request_dict.get("message")):
+            return {"error": "A message with the same name already exists"}, status.HTTP_400_BAD_REQUEST
         try:
             category_name = request_dict["category"]["name"]
             category = CategoryModel.query.filter_by(name=category_name).first()
@@ -89,7 +92,7 @@ class MessageListResource(Resource):
             # Now that we are sure we have a category
             # create a new Message
             message = MessageModel(
-                message=request_dict["message"],
+                message=request_dict["message"].lower(),
                 duration=request_dict["duration"],
                 category=category,
             )

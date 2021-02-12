@@ -1,5 +1,6 @@
 from api.extensions import db
 from api.models.generic import AddUpdateDelete
+from sqlalchemy import func
 
 
 class MessageModel(db.Model, AddUpdateDelete):
@@ -28,3 +29,10 @@ class MessageModel(db.Model, AddUpdateDelete):
         self.message = message
         self.duration = duration
         self.category = category
+
+    @classmethod
+    def is_unique(cls, message):
+        existing_message = cls.query.filter_by(message=func.lower(message)).first()
+        if existing_message is None:
+            return True
+        return False

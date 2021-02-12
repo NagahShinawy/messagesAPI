@@ -62,8 +62,12 @@ class CategoryListResource(Resource):
         errors = category_schema.validate(request_dict)
         if errors:
             return errors, status.HTTP_400_BAD_REQUEST
+
+        category_name = request_dict.get("name")
+        if not CategoryModel.is_unique(name=category_name):
+            return {"error": "A category with the same name already exists"}, status.HTTP_400_BAD_REQUEST
         try:
-            category = CategoryModel(request_dict["name"])
+            category = CategoryModel(category_name.lower())
             category.add(category)
             query = CategoryModel.query.get(category.id)
             result = category_schema.dump(query)
