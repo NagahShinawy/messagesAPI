@@ -36,8 +36,20 @@ there are 3 ways of auth , check db password hashed to see the difference
 
 
 ============================
+grand all db roles
+
+GRANT ALL PRIVILEGES ON DATABASE database_name TO username;
+
+=================
 RUN TESTS
 
-nose2 -v --with-coverage
+>> nose2 -v --with-coverage
+>> nose2 -v --with-coverage api.tests                 ==> run tests on dicrectory
+>> nose2 -v --with-coverage api.tests.test_category   ==> run tests on dicrectory
+
+>> coverage report -m
+
+>> coverage html  ==> generate html reports
 
 STILL HAS ISSUES WITH UNITTEST
+

@@ -4,6 +4,7 @@ from flask import url_for
 from api.extensions import db
 from api.utils.http import status
 from unittest import TestCase
+from requests.auth import _basic_auth_str
 
 
 class InitialTests(TestCase):
@@ -17,6 +18,11 @@ class InitialTests(TestCase):
         db.create_all()
 
     def tearDown(self):
+        """
+        executed after every unittest run
+        it deletes db every time of run unittest
+        :return:
+        """
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
@@ -26,9 +32,19 @@ class InitialTests(TestCase):
 
     def get_authentication_headers(self, username, password):
         authentication_headers = self.get_accept_content_type_headers()
+
         authentication_headers["Authorization"] = "Basic " + b64encode(
             (username + ":" + password).encode("utf-8")
         ).decode("utf-8")
+
+        # credentials = b64encode(b"testuser:T3s!p4s5w0RDd12#").decode('utf-8')
+        # authentication_headers['Authorization'] = "Basic " + credentials
+
+        # authentication_headers['Authorization'] = _basic_auth_str(username, password)
+
+        # user_credentials = b64encode(b"testuser:T3s!p4s5w0RDd12#").decode()
+        # authentication_headers.update({"Authorization": "Basic {}".format(user_credentials)})
+
         return authentication_headers
 
     def test_request_without_authentication(self):

@@ -33,7 +33,7 @@ class TestMessage(TestUser):
         )
         self.assertEqual(post_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(MessageModel.query.count(), 1)
-        # The message should have created a new catagory
+        # The message should have created a new category
         self.assertEqual(CategoryModel.query.count(), 1)
         post_response_data = json.loads(post_response.get_data(as_text=True))
         self.assertEqual(post_response_data["message"], new_message_message)

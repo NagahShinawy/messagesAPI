@@ -45,7 +45,7 @@ class CategoryResource(AuthRequiredResource):
         category = CategoryModel.query.get_or_404(id)
         try:
             category.delete(category)
-            response = make_response()
+            # response = make_response()
             # return response, status.HTTP_204_NO_CONTENT
             return "", status.HTTP_204_NO_CONTENT
         except SQLAlchemyError as e:
