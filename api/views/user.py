@@ -73,7 +73,6 @@ class UserListResource(
 
 
 class UserLogin(Resource):
-
     def post(self):
         if request.is_json:  # check if data comes from json or html form
             data = request.json
