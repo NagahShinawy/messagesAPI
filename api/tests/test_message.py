@@ -1,4 +1,3 @@
-from api.tests.test_views import InitialTests
 from flask import json, url_for
 from api.utils.http import status
 from api.models.message import MessageModel
