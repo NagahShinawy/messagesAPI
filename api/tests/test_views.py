@@ -1,4 +1,4 @@
-from app import create_app
+from api.app import create_app
 from base64 import b64encode
 from flask import url_for
 from api.extensions import db
@@ -8,7 +8,7 @@ from unittest import TestCase
 
 class InitialTests(TestCase):
     def setUp(self):
-        self.app = create_app("test_config")
+        self.app = create_app("api.config.test_config")
         self.test_client = self.app.test_client()
         self.app_context = self.app.app_context()
         self.app_context.push()
