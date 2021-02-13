@@ -18,3 +18,4 @@ api.add_resource(MessageListResource, "/messages/")
 api.add_resource(MessageResource, "/messages/<int:id>")
 
 api.add_resource(UserListResource, "/users/")
+api.add_resource(UserResource, "/users/<int:id>/")

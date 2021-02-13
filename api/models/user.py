@@ -6,16 +6,18 @@ from sqlalchemy import func
 
 
 class UserModel(db.Model, AddUpdateDelete):
+    __tablename__ = "user"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     # I save the hashed password
-    hashed_password = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.String(120), nullable=False)
     creation_date = db.Column(
         db.TIMESTAMP, server_default=db.func.current_timestamp(), nullable=False
     )
 
     def verify_password(self, password):
-        return password_context.verify(password, self.hashed_password)
+        return password_context.verify(password, self.password)
 
     def check_password_strength_and_hash_if_ok(self, password):
         if len(password) < 8:
@@ -30,7 +32,7 @@ class UserModel(db.Model, AddUpdateDelete):
             return "The password must include at least one number", False
         if re.search(r"[ !#$%&'()*+,-./[\\\]^_`{|}~" + r'"]', password) is None:
             return "The password must include at least one symbol", False
-        self.hashed_password = password_context.encrypt(password)
+        self.password = password_context.encrypt(password)
         return "", True
 
     def __init__(self, name):
