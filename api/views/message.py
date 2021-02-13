@@ -1,5 +1,5 @@
 from flask import request, jsonify, make_response
-from flask_restful import Resource
+from flask_restful import reqparse
 from api.models.message import MessageModel
 from api.models.category import CategoryModel
 from api.schema.message import MessageSchema
@@ -14,6 +14,14 @@ class MessageResource(AuthRequiredResource):
 
     schema_class = MessageSchema
 
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        "message",
+        type=str,
+        required=True,
+        help="message field can not left black",
+    )
+
     def get(self, id):
         message = MessageModel.query.get_or_404(id)
         message_schema = self.schema_class()
@@ -22,7 +30,8 @@ class MessageResource(AuthRequiredResource):
 
     def patch(self, id):
         message = MessageModel.query.get_or_404(id)
-        message_dict = request.get_json(force=False)
+        # message_dict = request.get_json(force=False)
+        message_dict = MessageResource.parser.parse_args()
         if not MessageModel.is_unique(id=id, message=message_dict.get("message")):
             return {
                 "error": "A message with the same name already exists"
@@ -92,8 +101,8 @@ class MessageListResource(AuthRequiredResource):
         if not request_dict:
             response = {"message": "No input data provided"}
             return response, status.HTTP_400_BAD_REQUEST
-        message_schema = self.schema_class()
-        errors = message_schema.validate(request_dict)
+        # message_schema = self.message_schema
+        errors = self.message_schema.validate(request_dict)
         if errors:
             return errors, status.HTTP_400_BAD_REQUEST
 
@@ -117,7 +126,7 @@ class MessageListResource(AuthRequiredResource):
             )
             message.add(message)
             query = MessageModel.query.get(message.id)
-            result = message_schema.dump(query)
+            result = self.message_schema.dump(query)
             return result, status.HTTP_201_CREATED
         except SQLAlchemyError as e:
             db.session.rollback()

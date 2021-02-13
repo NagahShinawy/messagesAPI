@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_restful import Api
 from api.views.message import MessageResource, MessageListResource
 from api.views.category import CategoryResource, CategoryListResource
-from api.views.user import UserResource, UserListResource
+from api.views.user import UserResource, UserListResource, UserLogin
 
 
 api_bp = Blueprint("api", __name__)
@@ -19,3 +19,4 @@ api.add_resource(MessageResource, "/messages/<int:id>")
 
 api.add_resource(UserListResource, "/users/")
 api.add_resource(UserResource, "/users/<int:id>/")
+api.add_resource(UserLogin, "/login/")

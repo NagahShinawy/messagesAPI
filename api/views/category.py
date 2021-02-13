@@ -38,7 +38,7 @@ class CategoryResource(AuthRequiredResource):
             return self.get(id)
         except SQLAlchemyError as e:
             db.session.rollback()
-            resp = jsonify({"error": str(e)})
+            # resp = jsonify({"error": str(e)})
             return {"error": str(e)}, status.HTTP_400_BAD_REQUEST
 
     def delete(self, id):

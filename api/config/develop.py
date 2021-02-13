@@ -15,3 +15,4 @@ SQLALCHEMY_DATABASE_URI = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_ADDR}/{DB_N
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, "db_repository")
 PAGINATION_PAGE_SIZE = 3
 PAGINATION_PAGE_ARGUMENT_NAME = "page"
+SECRET_KEY = "changeme"  # for generating jwt token

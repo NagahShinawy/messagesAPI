@@ -27,3 +27,9 @@ schema to validate , serialze and deserialze models
 1- make migrations ==>  python api/migrate.py db init
 2- python api/migrate.py db migrate
 3- python api/migrate.py db upgrade
+=======================================
+there are 3 ways of auth , check db password hashed to see the difference
+ 1- jwt : adding it to create app method
+ 2- hashed:
+     2-1 : from passlib.apps import custom_app_context as password_context
+     2-2 : self.password = password_context.encrypt(password)

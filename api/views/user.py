@@ -1,3 +1,4 @@
+from flask_jwt_extended import create_access_token
 from flask_restful import Resource
 from flask import request
 from sqlalchemy.exc import SQLAlchemyError
@@ -8,6 +9,7 @@ from api.models.user import UserModel
 from api.schema.user import UserSchema
 from api.utils.helpers.pagination import PaginationHelper
 from api.utils.http import status
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 user_schema = UserSchema()
@@ -16,7 +18,7 @@ user_schema = UserSchema()
 class UserResource(AuthRequiredResource):
     def get(self, id):
         user = UserModel.query.get_or_404(id)
-        result = user_schema.dump(user).data
+        result = user_schema.dump(user)
         return result
 
 
@@ -24,7 +26,7 @@ class UserListResource(
     Resource
 ):  # inherit from Resource not AuthRequiredResource because we need just auth on get not on all
     # methods of UserListResource
-    # @auth.login_required
+    @auth.login_required
     def get(self):
         pagination_helper = PaginationHelper(
             request,
@@ -57,7 +59,7 @@ class UserListResource(
                 password
             )
             if password_ok:
-                user.password = password
+                # user.password = generate_password_hash(password)
                 user.add(user)
                 query = UserModel.query.get(user.id)
                 result = user_schema.dump(query)
@@ -68,3 +70,23 @@ class UserListResource(
             db.session.rollback()
             # resp = {"error": str(e)}
             return {"error": str(e)}, status.HTTP_400_BAD_REQUEST
+
+
+class UserLogin(Resource):
+
+    def post(self):
+        if request.is_json:  # check if data comes from json or html form
+            data = request.json
+        else:
+            data = request.form
+        name = data.get("name")
+        password = data.get("password")
+        user = UserModel.query.filter_by(name=name).first()
+        if user:
+            hashed_password = user.password
+            if check_password_hash(hashed_password, password):
+                token = create_access_token(identity=name)
+                return {"token": token}, status.HTTP_200_OK
+        return {
+            "msg": "incorrect name or password"
+        }, status.HTTP_401_UNAUTHORIZED  # means permissions denied

@@ -1,5 +1,4 @@
 from api.extensions import db
-from sqlalchemy import func
 
 
 class AddUpdateDelete:
