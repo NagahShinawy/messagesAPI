@@ -14,7 +14,7 @@ class MessageModel(db.Model, AddUpdateDelete):
         db.TIMESTAMP, server_default=db.func.current_timestamp(), nullable=False
     )
     category_id = db.Column(
-        db.Integer, db.ForeignKey("category.id", ondelete="CASCADE"), nullable=False
+        db.Integer, db.ForeignKey("category.id", ondelete="all, delete-orphan"), nullable=False
     )
     category = db.relationship(
         "CategoryModel",
