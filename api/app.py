@@ -1,6 +1,7 @@
 from flask import Flask
 from api.extensions import db, migrate, jwt
 from api.views.views import api_bp
+from api.config.develop import API_URL, SWAGGER_URL
 
 
 def create_app(config_filename):

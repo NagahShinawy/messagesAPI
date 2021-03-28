@@ -18,3 +18,5 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, "db_repository")
 PAGINATION_PAGE_SIZE = 3
 PAGINATION_PAGE_ARGUMENT_NAME = "page"
 SECRET_KEY = "changeme"  # for generating jwt token
+SWAGGER_URL = '/swagger'
+API_URL = "/static/swagger/swagger.json"
